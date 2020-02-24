@@ -19,5 +19,5 @@ def search(request):
     })
     res['query'] = query
     res['page'] = page
-    res['final'] = res.get('total', {}).get('value', 0) % 10 < page - 1
+    res['final'] = res['hits']['total'].get('value', 0) / 10 < page + 1
     return render(request, 'search.html', res)

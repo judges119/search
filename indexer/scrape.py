@@ -22,9 +22,12 @@ def scrape(link):
     links = tree.xpath('//a/@href')
     links = map(clean_url, links)
     text = tree.xpath('//body//text()')
+    title = tree.xpath('//head//title//text()')
     doc = {
         'link': link,
-        'text': ','.join(text)
+        'title': title[0],
+        'text': ','.join(text),
+        'html': page.text
     }
     res = es.index(index="test-search", doc_type='page', body=doc)
     r.set(link, 1)

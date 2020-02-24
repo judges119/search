@@ -2,7 +2,7 @@
 <ul>
     {% for hit in hits.hits %}
         <li>
-            <p>{{ hit|get:"_source"|get:"link" }}</p>
+            <p><a href="{{ hit|get:"_source"|get:"link" }}">{{ hit|get:"_source"|get:"title" }}</a> - {{ hit|get:"_source"|get:"link" }}</p>
         </li>
     {% endfor %}
 </ul>
