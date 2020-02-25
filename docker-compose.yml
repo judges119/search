@@ -11,6 +11,8 @@ services:
             - indexer
     indexer:
         build: ./indexer
+        volumes:
+            - ./indexer:/code
         depends_on:
             - redis
             - elasticsearch
