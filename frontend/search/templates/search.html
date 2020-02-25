@@ -1,4 +1,8 @@
 {% load dicts arithmetic %}
+<form method="GET" action="/search">
+    <input type="text" name="query" placeholder="Search">
+</form>
+
 <ul>
     {% for hit in hits.hits %}
         <li>
