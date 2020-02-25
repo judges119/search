@@ -2,21 +2,29 @@ from celery import Celery
 from elasticsearch import Elasticsearch
 import json
 from lxml import html
+import re
 import redis
 import requests
 import sys
 from urllib.parse import urlparse, urlunparse
 
-# SITE = 'https://adamogrady.id.au/'
 r = redis.Redis(host='redis', port=6379, db=0)
 app = Celery('tasks', broker='amqp://guest:guest@rabbitmq:5672')
 es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
 
+proxies = {
+    "http": "socks5h://tor:9150",
+    "https": "socks5h://tor:9150",
+}
+
 def scrape(link):
+    parsed_link = urlparse(link)
+    if not parsed_link.hostname.endswith('.onion'):
+        return []
     if r.exists(link):
         return []
     r.set(link, 1)
-    page = requests.get(link)
+    page = requests.get(link, proxies=proxies)
     tree = html.fromstring(page.content)
     
     # Ignore RSS files
@@ -70,6 +78,3 @@ def scrape_and_spider(link):
     links = scrape(link)
     spider_links(links)
     return str(link)
-    
-# scrape("https://adamogrady.id.au/")
-scrape_and_spider.delay("https://www.vagrantup.com/")

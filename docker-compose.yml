@@ -17,6 +17,11 @@ services:
             - redis
             - elasticsearch
             - rabbitmq
+            - tor
+    tor:
+        build: ./tor
+        ports:
+            - 9150:9150
     rabbitmq:
         image: rabbitmq:3.8-alpine
     redis:
