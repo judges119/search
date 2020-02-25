@@ -16,6 +16,7 @@ es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
 def scrape(link):
     if r.exists(link):
         return str(link)
+    r.set(link, 1)
     page = requests.get(link)
     tree = html.fromstring(page.content)
     
@@ -30,7 +31,6 @@ def scrape(link):
         'html': page.text
     }
     res = es.index(index="test-search", doc_type='page', body=doc)
-    r.set(link, 1)
 
     for single_link in links:
         if SITE in single_link and r.exists(single_link) == 0:
