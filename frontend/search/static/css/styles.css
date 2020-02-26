@@ -1,0 +1,35 @@
+body, input, input::placeholder {
+    background-color: #000000;
+    color: #00FF00;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+h1, h2 {
+    margin: 0;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+a:link, a:hover {
+    color: #00FF00;
+}
+
+a:visited, a:active {
+    color: #008000;
+}
+
+input, input::placeholder {
+    border: 1px solid #00FF00;
+    width: 100%;
+    text-align: center;
+}
+
+.search {
+    margin: auto;
+    width: 300px;
+    height: 100px;
+    margin-top: 50px;
+    text-align: center;
+}
