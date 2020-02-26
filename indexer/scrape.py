@@ -1,8 +1,9 @@
+from bs4 import BeautifulSoup
 from celery import Celery
 from datetime import datetime
 from elasticsearch import Elasticsearch
 import json
-from lxml import html
+# from lxml import html
 import re
 import redis
 import requests
@@ -27,18 +28,20 @@ def scrape(link):
         return []
     r.set(link, now)
     page = requests.get(link, proxies=proxies)
-    tree = html.fromstring(page.content)
+    # tree = html.fromstring(page.content)
+    soup = BeautifulSoup(page.content, 'html.parser')
     
     # Ignore RSS files
-    if tree.xpath('boolean(//rss)'):
-        return []
+    # if tree.xpath('boolean(//rss)'):
+    #     return []
     
-    links = tree.xpath('//a/@href')
+
+    links = soup.find_all('a')
     for index, found_link in enumerate(links):
-        links[index] = [found_link, link]
+        links[index] = [found_link.get('href'), link]
     links = map(clean_url, links)
-    text = tree.xpath('//body//text()')
-    title = tree.xpath('//head//title//text()')
+    text = soup.get_text()
+    title = soup.title.name
     doc = {
         'link': link,
         'title': title[0] if len(title) > 0 else None,
