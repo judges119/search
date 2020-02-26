@@ -3,7 +3,6 @@ from celery import Celery
 from datetime import datetime
 from elasticsearch import Elasticsearch
 import json
-# from lxml import html
 import re
 import redis
 import requests
@@ -21,10 +20,11 @@ proxies = {
 
 def scrape(link):
     now = datetime.now()
+    one_week = (datetime.date.today() - datetime.timedelta(days=7)).timestamp()
     parsed_link = urlparse(link)
     if not parsed_link.hostname.endswith('.onion'):
         return []
-    if r.exists(link):
+    if r.exists(link) and r.get(link) < one_week:
         return []
     r.set(link, now)
     page = requests.get(link, proxies=proxies)
