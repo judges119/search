@@ -1,4 +1,5 @@
 from celery import Celery
+from datetime import datetime
 from elasticsearch import Elasticsearch
 import json
 from lxml import html
@@ -18,12 +19,13 @@ proxies = {
 }
 
 def scrape(link):
+    now = datetime.now()
     parsed_link = urlparse(link)
     if not parsed_link.hostname.endswith('.onion'):
         return []
     if r.exists(link):
         return []
-    r.set(link, 1)
+    r.set(link, now)
     page = requests.get(link, proxies=proxies)
     tree = html.fromstring(page.content)
     
@@ -41,7 +43,8 @@ def scrape(link):
         'link': link,
         'title': title[0] if len(title) > 0 else None,
         'text': ','.join(text),
-        'html': page.text
+        'html': page.text,
+        'scanned_timestamp': now
     }
     res = es.index(index="test-search", doc_type='page', body=doc)
     return links
