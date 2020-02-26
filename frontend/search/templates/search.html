@@ -1,14 +1,7 @@
 {% load dicts arithmetic %}
 {% include "head.html" %}
 
-<div class="search">
-    <h1>Planck</h1>
-    <h2>Search Small</h2>
-    
-    <form method="GET" action="/search">
-        <input type="text" name="query" placeholder="Search" value="{{ query }}">
-    </form>
-</div>
+{% include "search-form.html" %}
 
 <ul>
     {% for hit in hits.hits %}
