@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from celery import Celery
-from datetime import datetime
+from datetime import datetime, timedelta
 from elasticsearch import Elasticsearch
 import json
 import re
@@ -20,13 +20,13 @@ proxies = {
 
 def scrape(link):
     now = datetime.now()
-    one_week = (datetime.date.today() - datetime.timedelta(days=7)).timestamp()
+    one_week = (datetime.today() - timedelta(days=7)).timestamp()
     parsed_link = urlparse(link)
     if not parsed_link.hostname.endswith('.onion'):
         return []
-    if r.exists(link) and r.get(link) < one_week:
+    if r.exists(link) and float(r.get(link)) < one_week:
         return []
-    r.set(link, now)
+    r.set(link, str(now))
     page = requests.get(link, proxies=proxies)
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -35,15 +35,15 @@ def scrape(link):
         links[index] = [found_link.get('href'), link]
     links = map(clean_url, links)
     text = soup.get_text()
-    title = soup.title.name
+    title = soup.title.string
     doc = {
         'link': link,
-        'title': title[0] if len(title) > 0 else None,
-        'text': ','.join(text),
+        'title': title if len(title) > 0 else None,
+        'text': text,
         'html': page.text,
         'scanned_timestamp': now
     }
-    res = es.index(index="test-search", doc_type='page', body=doc)
+    res = es.index(index="test-search", doc_type='page', body=doc)    
     return links
 
 def clean_url(link):
