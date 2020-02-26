@@ -1,0 +1,16 @@
+{% include "head.html" %}
+
+<div class="search">
+    <h1>Planck</h1>
+    <h2>Add site to index?</h2>
+    
+    <form method="GET" action="/added-site">
+        <input type="text" name="url" placeholder="URL to index">
+
+        <input type="submit" value="Index">
+    </form>
+</div>
+
+{{ path }}
+
+{% include "foot.html" %}

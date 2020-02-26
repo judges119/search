@@ -5,5 +5,5 @@ WORKDIR /code
 COPY requirements.txt /code/
 RUN pip install lxml
 RUN pip install --no-cache-dir -r requirements.txt
-COPY scrape.py ./
-CMD [ "celery", "-A", "spider",  "worker", "--loglevel=info"]
+COPY . /code/
+CMD ["celery", "-A", "scrape",  "worker", "--loglevel=info"]
