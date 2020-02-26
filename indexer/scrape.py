@@ -28,13 +28,7 @@ def scrape(link):
         return []
     r.set(link, now)
     page = requests.get(link, proxies=proxies)
-    # tree = html.fromstring(page.content)
     soup = BeautifulSoup(page.content, 'html.parser')
-    
-    # Ignore RSS files
-    # if tree.xpath('boolean(//rss)'):
-    #     return []
-    
 
     links = soup.find_all('a')
     for index, found_link in enumerate(links):
