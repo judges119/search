@@ -14,7 +14,27 @@ def search(request):
     page = int(request.GET.get('page', 1))
     res = es.search(index="test-search", body={
         "query": {
-            "match": { "text": query }
+            "dis_max" : {
+                "queries" : [
+                    {
+                        "match" : {
+                            "title" : {
+                                "query": query,
+                                "boost": 1.2
+                            }
+                        }
+                    },
+                    {
+                        "match" : {
+                            "text" : {
+                                "query": query,
+                                "boost": 1
+                            }
+                        }
+                    }
+                ],
+                "tie_breaker" : 0.7
+            }
         },
         "from": (page - 1) * 10,
         "size": 10
@@ -29,8 +49,6 @@ def add_site(request):
 
 def added_site(request):
     url = request.GET['url']
-    # scrape_and_spider = celery.signature('scrape.scrape_and_spider')
-    # scrape_and_spider.delay(url)
     celery.send_task('scrape.scrape_and_spider', args=[url])
     context = {
         "url": url
