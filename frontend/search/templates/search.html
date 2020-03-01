@@ -6,7 +6,7 @@
 <ul>
     {% for hit in hits.hits %}
         <li>
-            <p><a href="{{ hit|get:"_source"|get:"link" }}">{{ hit|get:"_source"|get:"title" }}</a> - {{ hit|get:"_source"|get:"link" }}</p>
+            <p><a href="{{ hit|get:"_source"|get:"link" }}">{{ hit|get:"_source"|get:"title" }}</a> - {{ hit|get:"_source"|get:"link" }} - Score: {{ hit|get:"_score" }}</p>
         </li>
     {% endfor %}
 </ul>

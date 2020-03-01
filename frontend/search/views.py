@@ -1,6 +1,9 @@
 from celery import Celery
 from django.shortcuts import render
 from elasticsearch import Elasticsearch
+import json
+import requests
+from urllib import parse
 
 es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
 celery = Celery('tasks', broker='amqp://guest:guest@rabbitmq:5672')
@@ -11,38 +14,11 @@ def index(request):
 
 def search(request):
     query = request.GET['query']
-    page = int(request.GET.get('page', 1))
-    res = es.search(index="test-search", body={
-        "query": {
-            "dis_max" : {
-                "queries" : [
-                    {
-                        "match" : {
-                            "title" : {
-                                "query": query,
-                                "boost": 1.2
-                            }
-                        }
-                    },
-                    {
-                        "match" : {
-                            "text" : {
-                                "query": query,
-                                "boost": 1
-                            }
-                        }
-                    }
-                ],
-                "tie_breaker" : 0.7
-            }
-        },
-        "from": (page - 1) * 10,
-        "size": 10
-    })
-    res['query'] = query
-    res['page'] = page
-    res['final'] = res['hits']['total'].get('value', 0) / 10 < page + 1
-    return render(request, 'search.html', res)
+    page = request.GET.get('page', 1)
+    parsed_query = parse.quote_plus(query)
+    response = requests.get(f"http://query:5000/?query={parsed_query}&page={page}")
+    response = response.json()
+    return render(request, 'search.html', response)
 
 def add_site(request):
     return render(request, 'add_site.html')

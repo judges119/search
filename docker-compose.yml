@@ -9,6 +9,7 @@ services:
             - ./frontend:/code
         depends_on:
             - indexer
+            - query
     indexer:
         build: ./indexer
         volumes:
@@ -18,6 +19,17 @@ services:
             - elasticsearch
             - rabbitmq
             - tor
+    query:
+        build: ./query
+        command: flask run --host=0.0.0.0
+        ports:
+            - "5000:5000"
+        environment:
+            - FLASK_APP=query.py
+        volumes:
+            - ./query:/code
+        depends_on:
+            - elasticsearch
     tor:
         build: ./tor
         ports:
